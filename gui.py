@@ -1,5 +1,8 @@
 import os
 import sys
+import base64
+import pathlib
+from hashlib import sha256
 from random import randrange
 
 from PySide6.QtCore import QRect, QSize, Qt
@@ -7,7 +10,9 @@ from PySide6.QtGui import QAction, QIcon, QTextDocument
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (QApplication, QDial, QGridLayout, QHBoxLayout,
                                QLabel, QMainWindow, QPushButton, QTabWidget,
-                               QVBoxLayout, QWidget, QFileDialog)
+                               QVBoxLayout, QWidget, QFileDialog, QLineEdit)
+
+from nacl.secret import SecretBox
 
 class SecureDial():
     """
@@ -67,6 +72,83 @@ class SecondaryPassword(QWidget):
         self.setLayout(hbox)
 
 
+class EncryptWidget(QWidget):
+    """
+    Window to choose file, enter typed password, and then enter on screen password.
+    Will then change the specific file to something (*.txt.box?) and remove unencrypted file.
+    """
+    def __init__(self, num_dials=4):
+        super().__init__()
+        layout = QGridLayout()
+
+        row_1 = QHBoxLayout()
+        self.file_button = QPushButton("Choose File")
+        self.file_button.clicked.connect(self.launchDialog)
+        row_1.addWidget(self.file_button)
+        self.file_label = QLabel()
+        row_1.addWidget(self.file_label)
+
+        row_2 = QHBoxLayout()
+        self.pass_1_label = QLabel()
+        self.pass_1_label.setText("Enter Password: ")
+        row_2.addWidget(self.pass_1_label)
+        self.pass_1 = QLineEdit()
+        self.pass_1.setEchoMode(QLineEdit.Password)
+        row_2.addWidget(self.pass_1)
+        self.pass_2_label = QLabel()
+        self.pass_2_label.setText("Renter Password: ")
+        row_2.addWidget(self.pass_2_label)
+        self.pass_2 = QLineEdit()
+        self.pass_2.setEchoMode(QLineEdit.Password)
+        row_2.addWidget(self.pass_2)
+        self.pass_match = QLabel()
+        row_2.addWidget(self.pass_match)
+
+        self.dials = [SecureDial() for _ in range(num_dials)]
+
+        row_3 = QHBoxLayout()
+        for dial in self.dials:
+            row_3.addLayout(dial.layout)
+
+        row_4 = QHBoxLayout()
+        self.encrypt_button = QPushButton("Encrypt")
+        self.encrypt_button.clicked.connect(self.runEncryption)
+        row_4.addWidget(self.encrypt_button)
+
+        layout.addLayout(row_1, 1, 1, 1, 1)
+        layout.addLayout(row_2, 2, 1, 1, 1)
+        layout.addLayout(row_3, 3, 1, 1, 1)
+        layout.addLayout(row_4, 4, 1, 1, 1)
+        self.setLayout(layout)
+
+    def launchDialog(self):
+        response = QFileDialog.getOpenFileName(
+            parent=self,
+            caption="Select a File",
+        )
+        self.file_label.setText(str(response[0]))
+        self.file_path = pathlib.Path(str(response[0]))
+
+    def runEncryption(self):
+        if self.pass_1.text() != self.pass_2.text():
+            self.pass_match.setText("Passwords don't match!")
+            print(self.pass_1.text())
+            print(self.pass_2.text())
+        else:
+            # m = sha256()
+            # m.update(bytes(self.pass_1.text + "".join([d.v for d in self.dials]), "utf8"))
+            # box = SecretBox(self._s_2_b(m.hexdigest()))
+            # q = self.file_path / (self.file_path.name + ".box")
+            # q.write_bytes(box.encrypt(self.file_path.read_bytes()))
+            self.pass_match.setText("yessir")
+
+    def _b_2_s(self, b):
+        return str(base64.urlsafe_b64encode(b))
+    
+    def _s_2_b(self, s):
+        return base64.urlsafe_b64decode(s)
+
+
 class WelcomeWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -103,12 +185,12 @@ class MainWindow(QMainWindow):
         self.setFixedSize(QSize(800, 600))
         menu = self.menuBar()
 
-        self.secondary = SecondaryPassword()
+        self.encrypt = EncryptWidget()
         self.welcome = WelcomeWidget()
 
         self.tabbed = QTabWidget()
         self.tabbed.addTab(self.welcome, "Welcome")
-        self.tabbed.addTab(self.secondary, "Secondary Password")
+        self.tabbed.addTab(self.encrypt, "Encrypt")
         
         self.tabbed.setDocumentMode(True)
         self.tabbed.setCurrentIndex(0)
