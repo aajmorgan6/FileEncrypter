@@ -1,17 +1,14 @@
-import os
 import sys
-import base64
 import pathlib
 from random import randrange
 
-from PySide6.QtCore import QRect, QSize, Qt
-from PySide6.QtGui import QAction, QIcon, QTextDocument
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QAction
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (QApplication, QDial, QGridLayout, QHBoxLayout,
                                QLabel, QMainWindow, QPushButton, QTabWidget,
                                QVBoxLayout, QWidget, QFileDialog, QLineEdit)
 
-from nacl.secret import SecretBox
 from encrypt import make_key, encrypt_file_algo, decrypt_file_algo
 
 class SecureDial():

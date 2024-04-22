@@ -3,7 +3,6 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 
 import base64
-import getpass
 
 def make_key(salt: bytes, password: str):
     kdf = Scrypt(salt=salt, length=32, n=2**14, r=8, p=1)
