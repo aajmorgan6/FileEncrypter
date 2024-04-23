@@ -10,10 +10,10 @@ from subprocess import CalledProcessError, run
 import keyring #type: ignore
 
 def b_2_s(b):
-    return str(base64.urlsafe_b64decode(b))
+    return str(base64.urlsafe_b64encode(b))
 
 def s_2_b(s):
-    return base64.urlsafe_b64encode(s)
+    return base64.urlsafe_b64decode(s)
 
 def read_secret_string(filename):
     """Returns the secret string."""
