@@ -7,7 +7,7 @@ from PySide6.QtGui import QAction #type: ignore
 from PySide6.QtWebEngineWidgets import QWebEngineView #type: ignore 
 from PySide6.QtWidgets import (QApplication, QDial, QGridLayout, QHBoxLayout, #type: ignore
                                QLabel, QMainWindow, QPushButton, QTabWidget,
-                               QVBoxLayout, QWidget, QFileDialog, QLineEdit, QDialog, QMessageBox)
+                               QVBoxLayout, QWidget, QFileDialog, QLineEdit, QMessageBox)
 
 from encrypt import make_key, encrypt_file_algo, decrypt_file_algo, write_secret_string, read_secret_string, b_2_s, s_2_b
 
@@ -145,7 +145,8 @@ class EncryptWidget(QWidget):
 
             if button == QMessageBox.Yes:
                 # Save to keychain?
-                write_secret_string(self.file_path.name, b_2_s(key))
+                write_secret_string(self.file_path.name, f"{self.pass_1.text()},{value}")
+                print(len(b_2_s(key)), type(b_2_s(key)))
                 
             self.pass_1.clear()
             self.pass_2.clear()
@@ -207,7 +208,8 @@ class DecryptWidget(QWidget):
     def launchDialog(self):
         response = QFileDialog.getOpenFileName(
             parent=self,
-            caption="Select a File",
+            caption="Select a File", 
+            filter="Box files (*.box)"
         )
         self.file_label.setText(str(response[0]))
         self.file_path = pathlib.Path(str(response[0]))
@@ -229,8 +231,9 @@ class DecryptWidget(QWidget):
 
             if button == QMessageBox.Yes:
                 # Save to keychain?
-                self.key = s_2_b(read_secret_string(self.file_path.name[:-len(".box")]))
-
+                stored = read_secret_string(self.file_path.name[:-len(".box")])
+                password, value = stored.split(",")
+                self.key = make_key(bytes(int(value)), password)
 
     def runDecryption(self):
         if not self.key:
