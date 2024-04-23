@@ -1,7 +1,15 @@
+backports.tarfile==1.1.1
 cffi==1.16.0
 cryptography==42.0.5
+importlib_metadata==7.1.0
+jaraco.classes==3.4.0
+jaraco.context==5.3.0
+jaraco.functools==4.0.1
+keyring==25.1.0
+more-itertools==10.2.0
 pycparser==2.22
 PySide6==6.7.0
 PySide6_Addons==6.7.0
 PySide6_Essentials==6.7.0
 shiboken6==6.7.0
+zipp==3.18.1

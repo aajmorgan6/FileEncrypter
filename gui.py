@@ -2,14 +2,14 @@ import sys
 import pathlib
 from random import randrange
 
-from PySide6.QtCore import QSize, Qt
-from PySide6.QtGui import QAction
-from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtWidgets import (QApplication, QDial, QGridLayout, QHBoxLayout,
+from PySide6.QtCore import QSize, Qt #type: ignore
+from PySide6.QtGui import QAction #type: ignore
+from PySide6.QtWebEngineWidgets import QWebEngineView #type: ignore 
+from PySide6.QtWidgets import (QApplication, QDial, QGridLayout, QHBoxLayout, #type: ignore
                                QLabel, QMainWindow, QPushButton, QTabWidget,
-                               QVBoxLayout, QWidget, QFileDialog, QLineEdit)
+                               QVBoxLayout, QWidget, QFileDialog, QLineEdit, QDialog, QMessageBox)
 
-from encrypt import make_key, encrypt_file_algo, decrypt_file_algo
+from encrypt import make_key, encrypt_file_algo, decrypt_file_algo, write_secret_string, read_secret_string, b_2_s, s_2_b
 
 class SecureDial():
     """
@@ -137,7 +137,16 @@ class EncryptWidget(QWidget):
             encrypt_file_algo(self.file_path_str, key)
 
             # clear things up
-            self.pass_match.setText("Successfully Encrypted File")
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle("Sucessfully Encrypted File")
+            dlg.setText("Would you like to save password to keychain?")
+            dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            button = dlg.exec()
+
+            if button == QMessageBox.Yes:
+                # Save to keychain?
+                write_secret_string(self.file_path.name, b_2_s(key))
+                
             self.pass_1.clear()
             self.pass_2.clear()
             self.file_label.setText("")
@@ -155,6 +164,7 @@ class DecryptWidget(QWidget):
     def __init__(self, num_dials=4):
         super().__init__()
         layout = QGridLayout()
+        self.key = None
 
         row_1 = QHBoxLayout()
         self.file_button = QPushButton("Choose File")
@@ -170,6 +180,9 @@ class DecryptWidget(QWidget):
         self.pass_1 = QLineEdit()
         self.pass_1.setEchoMode(QLineEdit.Password)
         row_2.addWidget(self.pass_1)
+        self.load_key_btn = QPushButton("Load Password")
+        self.load_key_btn.clicked.connect(self.loadKey)
+        row_2.addWidget(self.load_key_btn)
         self.success_label = QLabel()
         row_2.addWidget(self.success_label)
 
@@ -200,10 +213,30 @@ class DecryptWidget(QWidget):
         self.file_path = pathlib.Path(str(response[0]))
         self.file_path_str = str(response[0])
 
+    def loadKey(self):
+        if self.file_label == "":
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle("No File Selected")
+            dlg.setText("Please select a file to decrypt first.")
+            dlg.setStandardButtons(QMessageBox.Ok)
+            button = dlg.exec()
+        else:
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle("Loading Password")
+            dlg.setText(f"Would you like to load password for {self.file_path.name}?")
+            dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            button = dlg.exec()
+
+            if button == QMessageBox.Yes:
+                # Save to keychain?
+                self.key = s_2_b(read_secret_string(self.file_path.name[:-len(".box")]))
+
+
     def runDecryption(self):
-        value = int("".join([str(dial.v) for dial in self.dials]))
-        key = make_key(bytes(value), self.pass_1.text())
-        success = decrypt_file_algo(self.file_path_str, key)
+        if not self.key:
+            value = int("".join([str(dial.v) for dial in self.dials]))
+            self.key = make_key(bytes(value), self.pass_1.text())
+        success = decrypt_file_algo(self.file_path_str, self.key)
         if not success:
             self.success_label.setText("Unable to Decrypt File")
         else:
