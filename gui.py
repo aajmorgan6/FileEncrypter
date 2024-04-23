@@ -232,8 +232,11 @@ class DecryptWidget(QWidget):
             if button == QMessageBox.Yes:
                 # Save to keychain?
                 stored = read_secret_string(self.file_path.name[:-len(".box")])
-                password, value = stored.split(",")
+                info = stored.split(",")
+                password, value = ",".join(info[:-1]), info[-1]
+                print(password)
                 self.key = make_key(bytes(int(value)), password)
+                self.runDecryption()
 
     def runDecryption(self):
         if not self.key:
