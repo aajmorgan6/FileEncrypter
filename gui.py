@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (QApplication, QDial, QGridLayout, QHBoxLayout, #t
                                QLabel, QMainWindow, QPushButton, QTabWidget,
                                QVBoxLayout, QWidget, QFileDialog, QLineEdit, QMessageBox)
 
-from encrypt import make_key, encrypt_file_algo, decrypt_file_algo, write_secret_string, read_secret_string, b_2_s, s_2_b
+from encrypt import make_key, encrypt_file_algo, decrypt_file_algo, write_secret_string, read_secret_string
 
 class SecureDial():
     """
@@ -130,11 +130,21 @@ class EncryptWidget(QWidget):
 
     def runEncryption(self):
         if self.pass_1.text() != self.pass_2.text():
-            self.pass_match.setText("Passwords don't match!")
+            dlg = QMessageBox(self)
+            dlg.setIcon(QMessageBox.Warning)
+            dlg.setText("Passwords don't match")
+            dlg.setStandardButtons(QMessageBox.Ok)
+            dlg.exec()
         else:
             value = int("".join([str(dial.v) for dial in self.dials]))
             key = make_key(bytes(value), self.pass_1.text())
             encrypt_file_algo(self.file_path_str, key)
+
+            dlg = QMessageBox(self)
+            dlg.setWindowTitle("Successfully Encrypted File")
+            dlg.setText("Successfully Encrypted File")
+            dlg.setStandardButtons(QMessageBox.Ok)
+            dlg.exec()
 
             # clear things up
             dlg = QMessageBox(self)
@@ -146,7 +156,6 @@ class EncryptWidget(QWidget):
             if button == QMessageBox.Yes:
                 # Save to keychain?
                 write_secret_string(self.file_path.name, f"{self.pass_1.text()},{value}")
-                print(len(b_2_s(key)), type(b_2_s(key)))
                 
             self.pass_1.clear()
             self.pass_2.clear()
@@ -184,8 +193,6 @@ class DecryptWidget(QWidget):
         self.load_key_btn = QPushButton("Load Password")
         self.load_key_btn.clicked.connect(self.loadKey)
         row_2.addWidget(self.load_key_btn)
-        self.success_label = QLabel()
-        row_2.addWidget(self.success_label)
 
         self.num_dials = num_dials
         self.dials = [SecureDial() for _ in range(self.num_dials)]
@@ -234,7 +241,6 @@ class DecryptWidget(QWidget):
                 stored = read_secret_string(self.file_path.name[:-len(".box")])
                 info = stored.split(",")
                 password, value = ",".join(info[:-1]), info[-1]
-                print(password)
                 self.key = make_key(bytes(int(value)), password)
                 self.runDecryption()
 
@@ -244,9 +250,17 @@ class DecryptWidget(QWidget):
             self.key = make_key(bytes(value), self.pass_1.text())
         success = decrypt_file_algo(self.file_path_str, self.key)
         if not success:
-            self.success_label.setText("Unable to Decrypt File")
+            dlg = QMessageBox(self)
+            dlg.setIcon(QMessageBox.Warning)
+            dlg.setText("Unable to Decrypt File")
+            dlg.setStandardButtons(QMessageBox.Ok)
+            dlg.exec()
         else:
-            self.success_label.setText("Successfully Decrypted File")
+            dlg = QMessageBox(self)
+            dlg.setText("Successfully Decrypted File")
+            dlg.setStandardButtons(QMessageBox.Ok)
+            dlg.exec()
+
         self.file_label.setText("")
 
         # clear things up

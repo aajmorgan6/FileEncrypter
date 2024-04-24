@@ -9,12 +9,6 @@ import platform
 from subprocess import CalledProcessError, run
 import keyring #type: ignore
 
-def b_2_s(b):
-    return str(base64.urlsafe_b64encode(b))
-
-def s_2_b(s):
-    return base64.urlsafe_b64decode(s)
-
 def read_secret_string(filename):
     """Returns the secret string."""
     if platform.system() == "Darwin":
@@ -48,7 +42,7 @@ def from_keychain(filename):
         return key_str
     except CalledProcessError as e:
         print(f"    The attempted read from the login keychain failed.")
-        return
+        return None
 
 def to_keychain(filename, secret_key_string):
     """Save secret key string to keychain"""
