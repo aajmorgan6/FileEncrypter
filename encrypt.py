@@ -20,7 +20,7 @@ def read_secret_string(filename):
 def write_secret_string(filename, secret_string):
     """Writes the secret string."""
     if platform.system() == "Darwin":
-        to_keychain(filename, secret_string)
+        return to_keychain(filename, secret_string)
     # elif platform.system() == "Windows":
     #     to_locker(secret_string) 
 
@@ -42,7 +42,7 @@ def from_keychain(filename):
         return key_str
     except CalledProcessError as e:
         print(f"    The attempted read from the login keychain failed.")
-        return None
+        return False
 
 def to_keychain(filename, secret_key_string):
     """Save secret key string to keychain"""
@@ -62,6 +62,25 @@ def to_keychain(filename, secret_key_string):
         return True
     except CalledProcessError as e:
         print(f"    The attempted write to the login keychain failed.")
+        return False
+
+def delete_keychain(filename):
+
+    arg_list = [
+        "/usr/bin/security",
+        "delete-generic-password",
+        "-s",
+        filename,
+        "-a",
+        "test",
+        "login.keychain-db",
+    ]
+    try:
+        run(arg_list, check=True, text=True, capture_output=True)
+        return True 
+    except CalledProcessError as e:
+        print("      The attempted delete to the login keychain failed.")
+        return False
 
 def make_key(salt: bytes, password: str):
     kdf = Scrypt(salt=salt, length=32, n=2**14, r=8, p=1)

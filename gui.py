@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (QApplication, QDial, QGridLayout, QHBoxLayout, #t
                                QLabel, QMainWindow, QPushButton, QTabWidget,
                                QVBoxLayout, QWidget, QFileDialog, QLineEdit, QMessageBox)
 
-from encrypt import make_key, encrypt_file_algo, decrypt_file_algo, write_secret_string, read_secret_string
+from encrypt import make_key, encrypt_file_algo, decrypt_file_algo, write_secret_string, read_secret_string, delete_keychain, from_keychain
 
 class SecureDial():
     """
@@ -155,6 +155,18 @@ class EncryptWidget(QWidget):
 
             if button == QMessageBox.Yes:
                 # Save to keychain?
+                success = from_keychain(self.file_path.name)
+
+                if success:
+                    dlg = QMessageBox(self)
+                    dlg.setText("File name already saved in keychain.")
+                    dlg.setInformativeText("Would you like to overwrite?")
+                    dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                    result = dlg.exec()
+
+                    if result == QMessageBox.Yes:
+                        delete_keychain(self.file_path.name)
+                
                 write_secret_string(self.file_path.name, f"{self.pass_1.text()},{value}")
                 
             self.pass_1.clear()
