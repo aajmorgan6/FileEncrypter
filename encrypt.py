@@ -5,82 +5,32 @@ from cryptography.hazmat.primitives.kdf.scrypt import Scrypt #type: ignore
 import os
 import base64
 import pathlib
-import platform
-from subprocess import CalledProcessError, run
 import keyring #type: ignore
 
 def read_secret_string(filename):
     """Returns the secret string."""
-    if platform.system() == "Darwin":
-        return from_keychain(filename)
-    # elif platform.system() == "Windows":
-    #     return from_locker()
+    return keyring.get_password(filename, "FileEncrypter")
 
 
 def write_secret_string(filename, secret_string):
     """Writes the secret string."""
-    if platform.system() == "Darwin":
-        return to_keychain(filename, secret_string)
-    # elif platform.system() == "Windows":
-    #     to_locker(secret_string) 
-
-def from_keychain(filename):
-    """ """
-    arg_list = [
-        "/usr/bin/security",
-        "find-generic-password",
-        "-w",
-        "-s",
-        filename,
-        "-a",
-        "FileEncrypter",
-        "login.keychain-db",
-    ]
     try:
-        cp = run(arg_list, check=True, text=True, capture_output=True)
-        key_str = cp.stdout.rstrip()
-        return key_str
-    except CalledProcessError as e:
-        print(f"    The attempted read from the login keychain failed.")
-        return False
-
-def to_keychain(filename, secret_key_string):
-    """Save secret key string to keychain"""
-    arg_list = [
-        "/usr/bin/security",
-        "add-generic-password",
-        "-s",
-        filename,
-        "-a",
-        "FileEncrypter",
-        "-w",
-        secret_key_string,
-        "login.keychain-db",
-    ]
-    try:
-        run(arg_list, check=True, text=True, capture_output=True)
-        return True
-    except CalledProcessError as e:
+        keyring.set_password(filename, "FileEncrypter", secret_string)
+        return True 
+    except keyring.errors.PasswordSetError as e:
         print(f"    The attempted write to the login keychain failed.")
         return False
+    
 
 def delete_keychain(filename):
-
-    arg_list = [
-        "/usr/bin/security",
-        "delete-generic-password",
-        "-s",
-        filename,
-        "-a",
-        "FileEncrypter",
-        "login.keychain-db",
-    ]
     try:
-        run(arg_list, check=True, text=True, capture_output=True)
-        return True 
-    except CalledProcessError as e:
+        keyring.delete_password(filename, "FileEncrypter")
+        return True
+    
+    except keyring.errors.PasswordDeleteError as e:
         print("      The attempted delete to the login keychain failed.")
         return False
+    
 
 def make_key(salt: bytes, password: str):
     kdf = Scrypt(salt=salt, length=32, n=2**14, r=8, p=1)

@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (QApplication, QDial, QGridLayout, QHBoxLayout, #t
                                QLabel, QMainWindow, QPushButton, QTabWidget,
                                QVBoxLayout, QWidget, QFileDialog, QLineEdit, QMessageBox)
 
-from encrypt import make_key, encrypt_file_algo, decrypt_file_algo, write_secret_string, read_secret_string, delete_keychain, from_keychain
+from encrypt import make_key, encrypt_file_algo, decrypt_file_algo, write_secret_string, read_secret_string, delete_keychain
 
 class SecureDial():
     """
@@ -139,7 +139,7 @@ class EncryptWidget(QWidget):
 
             if button == QMessageBox.Yes:
                 # Save to keychain?
-                success = from_keychain(self.file_path.name)
+                success = read_secret_string(self.file_path.name)
 
                 if success:
                     dlg = QMessageBox(self)
