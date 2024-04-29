@@ -18,12 +18,12 @@ source .venv/bin/activate
 
 Install all necessary libraries
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 Run the program
 ```bash
-python gui.py
+python3 gui.py
 ```
 
 ## GUI (PySide6)
@@ -72,7 +72,7 @@ Since this has a GUI aspect to it, the library `pyinstaller` can be used to crea
 
 First,
 ```bash
-pip install pyinstaller
+pip3 install pyinstaller
 ```
 and then run (from the same directory as before)
 ```bash
