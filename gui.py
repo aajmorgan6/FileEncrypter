@@ -53,22 +53,6 @@ class SecureDial():
         self.label.setText(str(self.v))
 
 
-class SecondaryPassword(QWidget):
-    """
-    Use SecureDials to create secondary part of inputted password for encryption/decryption
-    """
-    def __init__(self, num_dials=4):
-        super().__init__()
-
-        self.dials = [SecureDial() for _ in range(num_dials)]
-
-        hbox = QHBoxLayout()
-        for dial in self.dials:
-            hbox.addLayout(dial.layout)
-        grid = QGridLayout()
-        self.setLayout(hbox)
-
-
 class EncryptWidget(QWidget):
     """
     Window to choose file, enter typed password, and then enter on screen password.

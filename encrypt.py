@@ -33,7 +33,7 @@ def from_keychain(filename):
         "-s",
         filename,
         "-a",
-        "test",
+        "FileEncrypter",
         "login.keychain-db",
     ]
     try:
@@ -52,7 +52,7 @@ def to_keychain(filename, secret_key_string):
         "-s",
         filename,
         "-a",
-        "test",
+        "FileEncrypter",
         "-w",
         secret_key_string,
         "login.keychain-db",
@@ -72,7 +72,7 @@ def delete_keychain(filename):
         "-s",
         filename,
         "-a",
-        "test",
+        "FileEncrypter",
         "login.keychain-db",
     ]
     try:
