@@ -7,12 +7,13 @@ import base64
 import pathlib
 import keyring #type: ignore
 
-def read_secret_string(filename):
+def read_secret_string(filename: str) -> str:
     """Returns the secret string."""
-    return keyring.get_password(filename, "FileEncrypter")
+    pw = keyring.get_password(filename, "FileEncrypter")
+    return pw if pw else ""  # make sure to return str for type hint
 
 
-def write_secret_string(filename, secret_string):
+def write_secret_string(filename: str, secret_string: str) -> bool:
     """Writes the secret string."""
     try:
         keyring.set_password(filename, "FileEncrypter", secret_string)
@@ -22,7 +23,7 @@ def write_secret_string(filename, secret_string):
         return False
     
 
-def delete_keychain(filename):
+def delete_keychain(filename: str) -> bool:
     try:
         keyring.delete_password(filename, "FileEncrypter")
         return True
@@ -32,12 +33,12 @@ def delete_keychain(filename):
         return False
     
 
-def make_key(salt: bytes, password: str):
+def make_key(salt: bytes, password: str) -> bytes:
     kdf = Scrypt(salt=salt, length=32, n=2**14, r=8, p=1)
     derived = kdf.derive(password.encode())
     return base64.urlsafe_b64encode(derived)
 
-def encrypt_file_algo(encrypt_file, key) -> None:
+def encrypt_file_algo(encrypt_file: str, key: bytes) -> None:
     '''
     Key will come from both password and seed
     '''
