@@ -306,6 +306,10 @@ class WelcomeWidget(QWidget):
                             <h2>Why File Encrypter?</h2>
                             <p>In order to combat keyloggers, both on screen and typed passwords are used to encrypt a file.
                             No passwords are saved, so be careful about forgetting passwords or typing them in wrong!</p>
+                            <h2>Using the Keychain</h2>
+                            <p>Sometimes the best passwords are the hardest to remember, especially when you add in the extra numbers involved.</p>
+                            <p>If you want, save your password to the Apple Keychain for secure storage.</p>
+                            <p>If you are reencrypting a file, you will have the option to overwrite a previously saved password for your new one, but be careful, as that old password will be lost!</p>
                         </body>
                     </head>
                 </html>
