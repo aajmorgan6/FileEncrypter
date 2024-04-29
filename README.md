@@ -51,20 +51,11 @@ The salt used in Scrypt is the onscreen input provided by the user, giving extra
 ### Keychain/Locker Access
 
 Some of the passwords that may be used on this can be overwhelmingly long depending on the user, so saving the typed password as well as the numbers from the 4 dials can be safer.
-With a simple command run through 
-```python3 
-subprocess.run(arg_list)
-```
-a terminal command can be executed to add, find, or delete a password from the keychain. Windows users utilize the `keyring` module for the same things.
+With a simple command run through the `keyring` module, the program get set, get, and delete passwords from the Keychain or Locker, and allow only FileEncrypter to access the password.
 
 Apple Keychain is already password protected and secure, so saving file passwords there (or Locker for Windows) is secure for you but easily accessable. 
 Sometimes files can be decrypted and then encrypted again. If you want to use a new Keychain password, the program will overwrite the old password and use the new password.
 
-(MAC ONLY) If you want to find a password you may have forgotten without decrypting your file, you can either run 
-```bash
-/usr/bin/security find-generic-password -w -s "{FILE_NAME}" login.keychain-db
-```
-in your terminal, or open up the `Keychain Access` application and search for the filename. This will give back your password with a comma and then a number made up of the 4 numbers inputted by the dials.
 
 # Pyinstaller
 
