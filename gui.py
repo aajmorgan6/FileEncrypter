@@ -282,15 +282,15 @@ class WelcomeWidget(QWidget):
                     <head>
                         <style>
                         </style>
-                        <body>
-                            <h1>Welcome</h1>
+                        <body style="padding: 20px; text-align: center">
+                            <h1 style="text-align: center;">Welcome to FileEncrypter</h1>
                             <p>File Encrypter allows you to encypt and decrypt your files in a more secure way.</p>
                             <p>Simply choose a file and add both a typed password as well as 4 numbers chosen on screen.
                             </p>
-                            <h2>Why File Encrypter?</h2>
-                            <p>In order to combat keyloggers, both on screen and typed passwords are used to encrypt a file.
-                            No passwords are saved, so be careful about forgetting passwords or typing them in wrong!</p>
-                            <h2>Using the Keychain</h2>
+                            <h2 style="text-align: center; margin-top: 30px">Why FileEncrypter?</h2>
+                            <p>In order to combat keyloggers, both on screen and typed passwords are used to encrypt a file.</p>
+                            <p>No passwords are saved, so be careful about forgetting passwords or typing them in wrong!</p>
+                            <h2 style="text-align: center; margin-top: 30px">Using the Keychain</h2>
                             <p>Sometimes the best passwords are the hardest to remember, especially when you add in the extra numbers involved.</p>
                             <p>If you want, save your password to the Apple Keychain for secure storage.</p>
                             <p>If you are reencrypting a file, you will have the option to overwrite a previously saved password for your new one, but be careful, as that old password will be lost!</p>
