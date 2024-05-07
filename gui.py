@@ -2,10 +2,10 @@ import sys
 import pathlib
 from random import randrange
 
-from PySide6.QtCore import QSize, Qt #type: ignore
-from PySide6.QtGui import QAction #type: ignore
-from PySide6.QtWebEngineWidgets import QWebEngineView #type: ignore 
-from PySide6.QtWidgets import (QApplication, QDial, QGridLayout, QHBoxLayout, #type: ignore
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QAction
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWidgets import (QApplication, QDial, QGridLayout, QHBoxLayout,
                                QLabel, QMainWindow, QPushButton, QTabWidget,
                                QVBoxLayout, QWidget, QFileDialog, QLineEdit, QMessageBox)
 

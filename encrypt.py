@@ -1,11 +1,11 @@
-import cryptography #type: ignore
-from cryptography.fernet import Fernet #type: ignore
-from cryptography.hazmat.primitives.kdf.scrypt import Scrypt #type: ignore
+import cryptography
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 
 import os
 import base64
 import pathlib
-import keyring #type: ignore
+import keyring
 
 def read_secret_string(filename: str) -> str:
     """Returns the secret string."""
