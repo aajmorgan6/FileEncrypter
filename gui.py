@@ -1,6 +1,7 @@
 import sys
 import pathlib
 from random import randrange
+import touchid #type: ignore
 
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QAction
@@ -234,11 +235,22 @@ class DecryptWidget(QWidget):
 
             if button == QMessageBox.Yes:
                 # Save to keychain?
-                stored = read_secret_string(self.file_path.name[:-len(".box")])
-                info = stored.split(",")
-                password, value = ",".join(info[:-1]), info[-1]
-                self.key = make_key(bytes(int(value)), password)
-                self.runDecryption()
+                if touchid.is_available():
+                    try:
+                        success = touchid.authenticate(reason="authenticate via Touch ID")
+                        if success:
+                            stored = read_secret_string(self.file_path.name[:-len(".box")])
+                            info = stored.split(",")
+                            password, value = ",".join(info[:-1]), info[-1]
+                            self.key = make_key(bytes(int(value)), password)
+                            self.runDecryption()
+                    except Exception as e:
+                        dlg = QMessageBox(self)
+                        dlg.setWindowTitle("Invalid Password")
+                        dlg.setText("Invalid Touch ID password")
+                        dlg.setStandardButtons(QMessageBox.Ok)
+                        dlg.setIcon(QMessageBox.Warning)
+                        dlg.exec()
 
     def runDecryption(self):
         if not self.key:
