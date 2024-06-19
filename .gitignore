@@ -4,3 +4,4 @@ build
 dist
 new_venv
 venv
+.DS_Store
